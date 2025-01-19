@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QLabel, QLineEdit, QPushButton,
-                             QTableWidget, QTableWidgetItem, QFrame, QGridLayout, QHeaderView)
+                             QTableWidget, QTableWidgetItem, QFrame, QGridLayout, QHeaderView, QStackedWidget)
 from PySide6.QtCharts import QChart, QChartView, QLineSeries
 from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QColor, QPainter
@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 class StyleSheet:
     MAIN_STYLE = """
-        QMainWindow {
+     QMainWindow {
             background-color: #f5f6fa;
         }
         QWidget {
@@ -46,27 +46,60 @@ class StyleSheet:
             background-color: #2471a3;
         }
         QTableWidget {
-            background-color: white;
-            border: 1px solid #dcdde1;
+            border: 2px solid #dcdde1;
             border-radius: 4px;
-            gridline-color: #f1f2f6;
-        }
-        QTableWidget::item {
-            padding: 5px;
-        }
-        QTableWidget::item:selected {
-            background-color: #3498db;
-            color: white;
-        }
-        QHeaderView::section {
-            background-color: #f8f9fa;
-            padding: 8px;
-            border: none;
-            border-right: 1px solid #dcdde1;
-            font-weight: bold;
             color: #2c3e50;
         }
     """
+
+class LoginPage(QWidget):
+    def __init__(self, switch_to_dashboard):
+        super().__init__()
+        self.switch_to_dashboard = switch_to_dashboard
+        self.setup_ui()
+
+    def setup_ui(self):
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
+        layout.setSpacing(20)
+
+        # Title
+        title = QLabel("Login to Stock Portfolio Manager")
+        title.setStyleSheet("font-size: 20px; font-weight: bold; color: #2c3e50;")
+        layout.addWidget(title, alignment=Qt.AlignCenter)
+
+        # Username field
+        self.username_input = QLineEdit()
+        self.username_input.setPlaceholderText("Username")
+        layout.addWidget(self.username_input)
+
+        # Password field
+        self.password_input = QLineEdit()
+        self.password_input.setPlaceholderText("Password")
+        self.password_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(self.password_input)
+
+        # Login button
+        login_button = QPushButton("Login")
+        login_button.clicked.connect(self.handle_login)
+        layout.addWidget(login_button)
+
+        self.setLayout(layout)
+
+    def handle_login(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        #TODO: Replace with actual authentication logic
+        # Example authentication logic
+        if username == "admin" and password == "password":
+            self.switch_to_dashboard()
+        else:
+            self.username_input.setText("")
+            self.password_input.setText("")
+            self.username_input.setPlaceholderText("Invalid credentials, try again!")
+            self.password_input.setPlaceholderText("")
+
 
 
 class PortfolioView(QWidget):
@@ -109,6 +142,7 @@ class PortfolioView(QWidget):
         """)
         summary_layout = QHBoxLayout()
 
+        # TODO: Add actual data
         # Total Value
         value_container = QFrame()
         value_layout = QVBoxLayout()
@@ -288,11 +322,25 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 800)
         self.setStyleSheet(StyleSheet.MAIN_STYLE)
 
+        self.stack = QStackedWidget()
+
+        # Add login page
+        self.login_page = LoginPage(self.show_dashboard)
+        self.stack.addWidget(self.login_page)
+
+        # Add dashboard
         self.portfolio_view = PortfolioView()
-        self.setCentralWidget(self.portfolio_view)
+        self.stack.addWidget(self.portfolio_view)
+
+        self.setCentralWidget(self.stack)
+
+    def show_dashboard(self):
+        self.stack.setCurrentWidget(self.portfolio_view)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+    
