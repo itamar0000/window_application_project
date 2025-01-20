@@ -1,36 +1,25 @@
-from interfaces import IAuthService, IPortfolioService
-from model import Portfolio, Stock
-from datetime import datetime
+# services.py
+from api_client import ApiClient
+from frontend.model import Portfolio
+from frontend.interfaces import IAuthService, IPortfolioService
+
 
 class AuthService(IAuthService):
     def __init__(self):
-        self.valid_users = {
-            "admin": "password123",
-            "user1": "user123"
-        }
+        self.api_client = ApiClient("https://your-api-url")
     
     def authenticate(self, username: str, password: str) -> bool:
-        return (username in self.valid_users and 
-                self.valid_users[username] == password)
+        return self.api_client.login(username, password)
 
 class PortfolioService(IPortfolioService):
     def __init__(self):
-        # Mock data for demonstration
-        self.mock_portfolio = Portfolio(
-            stocks=[
-                Stock("AAPL", 10, 150.00),
-                Stock("GOOGL", 5, 2800.00)
-            ],
-            last_updated=datetime.now()
-        )
+        self.api_client = ApiClient("https://your-api-url")
 
     def get_portfolio(self, user_id: str) -> Portfolio:
-        return self.mock_portfolio
+        return self.api_client.get_portfolio(user_id)
 
     def execute_buy_order(self, user_id: str, symbol: str, shares: int) -> bool:
-        # Mock implementation
-        return True
+        return self.api_client.execute_buy_order(user_id, symbol, shares)
 
     def execute_sell_order(self, user_id: str, symbol: str, shares: int) -> bool:
-        # Mock implementation
-        return True
+        return self.api_client.execute_sell_order(user_id, symbol, shares)
