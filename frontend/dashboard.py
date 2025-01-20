@@ -39,6 +39,11 @@ class StyleSheet:
         font-size: 14px;
         font-weight: bold;
     }
+    QTableWidget{
+        background-color: white;
+        border: 1px solid #dcdde1;
+        color: #2c3e50;
+    }
     """
 
 class LoginView(QWidget):
@@ -99,8 +104,8 @@ class PortfolioView(QWidget):
 
     def setup_ui(self):
         layout = QGridLayout()
-        layout.setSpacing(20)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(30    )
+        layout.setContentsMargins(50, 50, 50, 50)
 
         self.summary_card = self._create_summary_card()
         self.holdings_table = self._create_holdings_table()
@@ -116,7 +121,7 @@ class PortfolioView(QWidget):
 
     def _create_summary_card(self) -> QFrame:
         card = QFrame()
-        card.setStyleSheet("QFrame { background-color: white; border-radius: 8px; padding: 15px; }")
+        card.setStyleSheet("QFrame { background-color: white; border-radius: 8px;border:1px solid black padding: 15px; }")
         
         layout = QHBoxLayout()
         
@@ -136,13 +141,23 @@ class PortfolioView(QWidget):
 
     def _create_holdings_table(self) -> QFrame:
         card = QFrame()
-        card.setStyleSheet("QFrame { background-color: white; border-radius: 8px; padding: 15px; }")
+        card.setStyleSheet("QFrame { background-color: white; border-radius: 8px; padding: 15px; color:black}")
         
         layout = QVBoxLayout()
-        
+        layout.addWidget(QLabel("Stock Holdings"))
         self.stock_table = QTableWidget()
         self.stock_table.setColumnCount(4)
+        self.stock_table.setStyleSheet("""
+    QHeaderView::section {
+        background-color: #f0f0f0;
+        padding: 4px;
+        border: 1px solid #d0d0d0;
+        color: #2c3e50;
+    }
+""")
         self.stock_table.setHorizontalHeaderLabels(["Symbol", "Shares", "Price", "Value"])
+        self.stock_table.verticalHeader().setVisible(True)
+        self.stock_table.horizontalHeader().setMinimumHeight(70)
         self.stock_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         
         layout.addWidget(self.stock_table)
