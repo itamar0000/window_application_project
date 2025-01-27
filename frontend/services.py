@@ -1,7 +1,7 @@
 # services.py
 from api_client import ApiClient
-from frontend.model import Portfolio
-from frontend.interfaces import IAuthService, IPortfolioService
+from model import Portfolio
+from interfaces import IAuthService, IPortfolioService
 
 
 class AuthService(IAuthService):
